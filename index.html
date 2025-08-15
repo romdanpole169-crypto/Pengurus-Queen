@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Pesantren</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variabel Warna --- */
+        :root {
+            --primary-color: #0D9488;
+            --secondary-color: #0F766E;
+            --light-color: #F0FDFA;
+            --dark-color: #134E4A;
+            --text-color: #334155;
+            --gray-color: #64748B;
+            --bg-color: #F8FAFC;
+            --gold-color: #E4A11B;
+        }
+
+        /* --- Reset & Gaya Dasar --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+        a { text-decoration: none; color: var(--primary-color); transition: all 0.3s ease; }
+        a:hover { color: var(--secondary-color); }
+
+        /* --- Header & Navigasi --- */
+        .header { background-color: white; padding: 0.75rem 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { display: flex; align-items: center; gap: 1rem; }
+        .logo-emblem { height: 48px; width: auto; border-radius: 50%; }
+        .logo-text-wrapper { display: flex; flex-direction: column; align-items: flex-start; }
+        .logo-text-arabic { font-family: 'Amiri', serif; font-size: 1.25rem; font-weight: 700; color: var(--gold-color); line-height: 1.2; }
+        .logo-text-latin { font-size: 0.8rem; font-weight: 700; color: var(--gold-color); letter-spacing: 0.5px; text-transform: uppercase; }
+        .nav-menu-desktop { display: none; }
+        .nav-menu-desktop a { font-weight: 500; padding: 0.5rem 1rem; }
+        #menu-toggle { display: none; }
+        .menu-button-container { display: block; }
+        .menu-button { cursor: pointer; font-size: 1.5rem; }
+        .mobile-menu { position: fixed; top: 0; right: -100%; width: 80%; max-width: 320px; height: 100%; background-color: white; z-index: 100; padding: 1.5rem; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.35s ease-in-out; }
+        .mobile-menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .mobile-menu-header h3 { font-size: 1.2rem; color: var(--dark-color); }
+        .mobile-menu a { display: flex; align-items: center; font-size: 1.1rem; padding: 1rem; border-radius: 8px; }
+        .mobile-menu a i { width: 30px; }
+        .mobile-menu a:hover { background-color: var(--light-color); color: var(--primary-color); }
+        #menu-toggle:checked~.mobile-menu { right: 0; }
+
+        /* --- Konten Halaman --- */
+        .page { display: none; padding: 2.5rem 0; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { display: block; }
+        .page-title { font-size: 2.25rem; text-align: center; margin-bottom: 2.5rem; font-weight: 700; color: var(--dark-color); }
+        
+        /* --- Tombol & Kartu --- */
+        .btn { display: inline-block; color: white; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); padding: 0.8rem 2rem; border-radius: 50px; font-weight: 600; box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3); transition: all 0.3s ease; border: none; cursor: pointer; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 7px 20px rgba(13, 148, 136, 0.4); }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.9rem; }
+        .btn:disabled { background: var(--gray-color); cursor: not-allowed; transform: none; box-shadow: none; }
+        .wa-button { display: inline-flex; align-items: center; gap: 0.5rem; background-color: #25D366; color: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 500; font-size: 0.85rem; }
+        .wa-button:hover { background-color: #128C7E; color: white; }
+        .card { background-color: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; transition: all 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .card i { font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-color); }
+        .card h3 { font-size: 1.1rem; font-weight: 600; }
+
+        /* --- Beranda --- */
+        .hero-card { background-image: url('logo 2.png'); background-size: cover; background-position: center; color: white; padding: 4rem 1.5rem; border-radius: 16px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0, 0.3); }
+        .hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 1; }
+        .hero-card-content { position: relative; z-index: 2; }
+        .hero-card h1 { font-size: 2.5rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .hero-card p { font-size: 1.1rem; opacity: 0.95; margin-top: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        
+        /* --- Perizinan --- */
+        .permissions-container { max-width: 900px; margin: 0 auto; }
+        .form-card { background-color: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.07); margin-bottom: 2rem; }
+        .form-card h3 { margin-bottom: 1.5rem; color: var(--dark-color); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; font-family: 'Poppins', sans-serif; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .permission-table-wrapper { background-color: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.07); overflow: hidden; }
+        .permission-table { width: 100%; border-collapse: collapse; }
+        .permission-table th, .permission-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .permission-table thead { background-color: var(--dark-color); color: white; }
+        .permission-table tbody tr:hover { background-color: var(--light-color); }
+        .status-badge-permission { padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; color: white; text-align: center; }
+        .status-badge-permission.keluar { background-color: #F59E0B; }
+        .status-badge-permission.kembali { background-color: #22C55E; }
+
+        /* --- Kalender Pendidikan --- */
+        .calendar-container { background-color: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.07); max-width: 900px; margin: 0 auto; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .calendar-header h3 { font-size: 1.5rem; font-weight: 600; color: var(--dark-color); text-align: center; flex-grow: 1; }
+        .calendar-header button { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--primary-color); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: background-color 0.3s ease; }
+        .calendar-header button:hover { background-color: var(--light-color); }
+        .calendar-weekdays, .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .calendar-weekdays div { text-align: center; font-weight: 600; color: var(--gray-color); padding-bottom: 0.5rem; font-size: 0.9rem; }
+        .calendar-days .day { text-align: center; padding: 0.8rem 0.2rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease-in-out; border: 2px solid transparent; font-weight: 500; position: relative; }
+        .calendar-days .day:hover { background-color: var(--light-color); transform: scale(1.05); }
+        .calendar-days .day.other-month { color: #cbd5e1; cursor: default; }
+        .calendar-days .day.other-month:hover { background-color: transparent; transform: none; }
+        .calendar-days .day.today { background-color: var(--gold-color); color: white; font-weight: 700; }
+        .calendar-days .day.event { background-color: var(--primary-color); color: white; }
+        .calendar-days .day.event.today { background: linear-gradient(45deg, var(--gold-color), var(--primary-color)); }
+        .calendar-days .day.selected { border-color: var(--dark-color); background-color: var(--light-color); color: var(--dark-color); }
+        .event-details-container { background-color: #F8FAFC; padding: 1.5rem; border-radius: 12px; margin-top: 2rem; max-width: 900px; margin-left: auto; margin-right: auto; border: 1px solid #e2e8f0; min-height: 100px; }
+        .event-details-container h4 { color: var(--dark-color); margin-bottom: 1rem; }
+        #event-list { list-style: none; padding-left: 0; }
+        #event-list li { padding: 0.75rem; border-bottom: 1px solid #e2e8f0; transition: background-color 0.3s; }
+        #event-list li:hover { background-color: white; }
+        #event-list li:last-child { border-bottom: none; }
+        #event-list .event-title { font-weight: 600; color: var(--secondary-color); }
+        #event-list .event-desc { font-size: 0.9rem; color: var(--gray-color); display: block; }
+
+        /* --- Struktur Organisasi --- */
+        .tree { width: 100%; overflow-x: auto; text-align: center; padding: 1rem 0; }
+        .tree ul { padding-top: 20px; position: relative; display: inline-flex; }
+        .tree li { list-style-type: none; position: relative; padding: 20px 5px 0 5px; }
+        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #ccc; width: 50%; height: 20px; }
+        .tree li::after { right: auto; left: 50%; border-left: 2px solid #ccc; }
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        .tree li:last-child::before { border-right: 2px solid #ccc; border-radius: 0 5px 0 0; }
+        .tree li:first-child::after { border-radius: 5px 0 0 0; }
+        .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #ccc; width: 0; height: 20px; }
+        .tree .node { padding: 0.8rem 1rem; background-color: white; border-radius: 8px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); min-width: 180px; border-top: 4px solid; transition: all 0.3s ease; }
+        .tree .node:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .tree .node-pimpinan { border-color: var(--gold-color); }
+        .tree .node-ketua { border-color: var(--dark-color); }
+        .tree .node-inti { border-color: var(--secondary-color); }
+        .tree .node-kord { border-color: #3B82F6; }
+        .tree .node-anggota { border-color: #A855F7; min-width: 150px; padding: 0.6rem 0.8rem; }
+        .tree .node h4 { font-size: 1rem; font-weight: 600; color: #1E293B; }
+        .tree .node-anggota h4 { font-size: 0.9rem; }
+        .tree .node p { font-size: 0.85rem; color: var(--gray-color); line-height: 1.2; }
+        
+        /* --- Jadwal & Berita --- */
+        .schedule-block { margin-bottom: 2.5rem; }
+        .schedule-title { font-size: 1.5rem; font-weight: 600; color: var(--dark-color); margin-bottom: 1rem; }
+        .schedule-table-wrapper { background-color: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.07); overflow: hidden; }
+        .schedule-table { width: 100%; border-collapse: collapse; }
+        .schedule-table th, .schedule-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .schedule-table thead { background-color: var(--dark-color); color: white; font-size: 1rem; letter-spacing: 0.5px; }
+        .schedule-table tbody tr:last-child td { border-bottom: none; }
+        .schedule-table tbody tr:hover { background-color: var(--light-color); }
+        .schedule-table .day-cell { font-weight: 600; color: var(--secondary-color); width: 130px; }
+        .schedule-table .activity-cell { font-weight: 500; color: var(--text-color); }
+        .schedule-table .details-cell { color: var(--gray-color); font-size: 0.9rem; }
+        .news-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        .news-card { background-color: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-color); }
+        .news-date { font-size: 0.8rem; font-weight: 600; color: var(--gray-color); margin-bottom: 0.5rem; }
+        .news-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--dark-color); }
+        .news-card p { font-size: 0.95rem; margin-bottom: 1rem; }
+        .read-more { font-weight: 600; font-size: 0.9rem; }
+        .article-content { background: white; padding: 2rem; border-radius: 12px; max-width: 800px; margin: 0 auto; }
+        .back-link { display: inline-block; margin-bottom: 2rem; font-weight: 600; }
+
+        /* --- Absensi & Rekap --- */
+        .attendance-container { max-width: 800px; margin: 0 auto; background-color: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.07); }
+        .class-selector { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem; justify-content: center; }
+        .class-btn { padding: 0.6rem 1.2rem; border: 2px solid #cbd5e1; background-color: white; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .class-btn:hover { background-color: var(--light-color); }
+        .class-btn.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        #student-list { min-height: 100px; }
+        .student-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #e2e8f0; }
+        .student-row:last-child { border-bottom: none; }
+        .student-name { font-weight: 500; }
+        .status-buttons button { padding: 0.4rem 0.8rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; margin-left: 0.5rem; transition: all 0.3s ease; }
+        .status-buttons button:disabled { background-color: #cbd5e1; cursor: not-allowed; }
+        .status-buttons button.hadir { background-color: #22C55E; color: white; }
+        .status-buttons button.izin { background-color: #3B82F6; color: white; }
+        .status-buttons button.sakit { background-color: #F59E0B; color: white; }
+        .message-box { text-align: center; padding: 1rem; border-radius: 8px; margin-top: 1.5rem; display: none; animation: fadeIn 0.3s; }
+        .message-box.success { background-color: #D1FAE5; color: #065F46; }
+        .message-box.error { background-color: #FEE2E2; color: #991B1B; }
+        .wali-kelas-info { text-align: center; margin-top: -0.5rem; margin-bottom: 1.5rem; padding: 0.75rem; background-color: var(--light-color); border-radius: 8px; font-size: 1.1rem; font-weight: 500; color: var(--dark-color); display: none; animation: fadeIn 0.5s; }
+        .wali-kelas-info strong { font-weight: 700; color: var(--secondary-color); }
+        .recap-controls { display: flex; gap: 1rem; justify-content: center; align-items: center; margin-bottom: 2rem; background-color: white; padding: 1.5rem; border-radius: 12px; flex-wrap: wrap; }
+        .recap-controls input[type="date"] { padding: 0.75rem; border: 2px solid #cbd5e1; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 1rem; }
+        .recap-results-container { margin-top: 2rem; min-height: 150px; }
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; color: white; }
+        .status-badge.hadir { background-color: #22C55E; }
+        .status-badge.izin { background-color: #3B82F6; }
+        .status-badge.sakit { background-color: #F59E0B; }
+        #connection-status { text-align: center; padding: 0.5rem; font-weight: 500; border-radius: 8px; margin-bottom: 1.5rem; }
+        #connection-status.connecting { background-color: #FEF3C7; color: #92400E; }
+        #connection-status.success { background-color: #D1FAE5; color: #065F46; }
+        #connection-status.error { background-color: #FEE2E2; color: #991B1B; }
+        
+        /* --- Modal Login --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); display: none; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s; }
+        .modal-box { background: white; padding: 2.5rem 2rem 2rem 2rem; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; position: relative; }
+        .modal-box h3 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--dark-color); }
+        .modal-box p { margin-bottom: 1.5rem; color: var(--gray-color); }
+        .modal-box input { width: 100%; padding: 0.75rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; margin-bottom: 1rem; }
+        .modal-box .error-message { color: #DC2626; margin-top: -0.5rem; margin-bottom: 1rem; font-size: 0.9rem; display: none; }
+        #close-modal-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; color: #9ca3af; cursor: pointer; background: none; border: none;}
+        #close-modal-btn:hover { color: var(--dark-color); }
+
+        /* --- Footer --- */
+        .footer { background-color: var(--dark-color); color: #e2e8f0; text-align: center; padding: 2.5rem 0; margin-top: 3rem; }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .tree ul { flex-direction: column; padding-top: 0; }
+            .tree li { padding: 10px 0; }
+            .tree li::before, .tree li::after, .tree ul ul::before { display: none; }
+            .schedule-table-wrapper, .permission-table-wrapper { overflow-x: auto; }
+            .schedule-table, .permission-table { min-width: 600px; }
+        }
+        @media (min-width: 768px) {
+            .nav-menu-desktop { display: flex; }
+            .menu-button-container { display: none; }
+            .feature-grid { grid-template-columns: repeat(3, 1fr); }
+            .news-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (min-width: 1024px) {
+            .feature-grid { grid-template-columns: repeat(6, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container navbar">
+            <a href="#beranda" class="nav-brand page-link">
+                <img src="logo1.png" alt="Logo Emblem" class="logo-emblem">
+                <div class="logo-text-wrapper">
+                    <div class="logo-text-arabic">التربية الإسلامية السلفية</div>
+                    <div class="logo-text-latin">PP QUEEN AINUL YAQIEN</div>
+                </div>
+            </a>
+            <nav class="nav-menu-desktop">
+                <a href="#beranda" class="page-link">Beranda</a>
+                <a href="#perizinan" class="page-link">Perizinan</a>
+                <a href="#kalender" class="page-link">Kalender</a>
+                <a href="#struktur" class="page-link">Struktur</a>
+                <a href="#jadwal" class="page-link">Jadwal</a>
+                <a href="#berita" class="page-link">Berita</a>
+                <a href="#absensi" class="page-link">Absensi</a>
+                <a href="#rekap" class="page-link">Rekap</a>
+            </nav>
+            <div class="menu-button-container">
+                <label for="menu-toggle" class="menu-button"><i class="fas fa-bars"></i></label>
+            </div>
+        </div>
+    </header>
+
+    <input type="checkbox" id="menu-toggle">
+    <nav class="mobile-menu">
+        <div class="mobile-menu-header">
+            <h3>Menu Utama</h3>
+            <label for="menu-toggle" class="menu-button"><i class="fas fa-times"></i></label>
+        </div>
+        <a href="#beranda" class="page-link"><i class="fas fa-home" style="width: 30px;"></i> Beranda</a>
+        <a href="#perizinan" class="page-link"><i class="fas fa-file-signature" style="width: 30px;"></i> Perizinan</a>
+        <a href="#kalender" class="page-link"><i class="fas fa-calendar-days" style="width: 30px;"></i> Kalender</a>
+        <a href="#struktur" class="page-link"><i class="fas fa-sitemap" style="width: 30px;"></i> Struktur</a>
+        <a href="#jadwal" class="page-link"><i class="fas fa-calendar-alt" style="width: 30px;"></i> Jadwal</a>
+        <a href="#berita" class="page-link"><i class="fas fa-newspaper" style="width: 30px;"></i> Berita</a>
+        <a href="#absensi" class="page-link"><i class="fas fa-clipboard-check" style="width: 30px;"></i> Absensi</a>
+        <a href="#rekap" class="page-link"><i class="fas fa-chart-bar" style="width: 30px;"></i> Rekap Absensi</a>
+    </nav>
+
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button id="close-modal-btn" aria-label="Tutup"><i class="fas fa-times"></i></button>
+            <h3>Akses Terbatas</h3>
+            <p>Silakan masukkan kata sandi untuk mengakses halaman ini.</p>
+            <input type="password" id="password-input" placeholder="Kata Sandi">
+            <div id="password-error" class="error-message">Kata sandi salah!</div>
+            <button id="login-btn" class="btn">Masuk</button>
+        </div>
+    </div>
+    
+    <main class="container">
+        <section id="beranda" class="page">
+            <div class="hero-card">
+                <div class="hero-card-content">
+                    <h1>Selamat Datang</h1>
+                    <p>Pusat informasi pengurus untuk kemajuan bersama.</p>
+                </div>
+            </div>
+            <div class="feature-grid">
+                <a href="#perizinan" class="card page-link"><i class="fas fa-file-signature"></i><h3>Perizinan</h3></a>
+                <a href="#kalender" class="card page-link"><i class="fas fa-calendar-days"></i><h3>Kalender</h3></a>
+                <a href="#struktur" class="card page-link"><i class="fas fa-sitemap"></i><h3>Struktur</h3></a>
+                <a href="#jadwal" class="card page-link"><i class="fas fa-calendar-alt"></i><h3>Jadwal</h3></a>
+                <a href="#berita" class="card page-link"><i class="fas fa-newspaper"></i><h3>Berita</h3></a>
+                <a href="#absensi" class="card page-link"><i class="fas fa-clipboard-check"></i><h3>Absensi</h3></a>
+            </div>
+        </section>
+
+        <section id="perizinan" class="page">
+            <h2 class="page-title">Sistem Perizinan Santri</h2>
+            <div class="permissions-container">
+                <div class="form-card">
+                    <h3><i class="fas fa-plus-circle"></i> Catat Izin Baru</h3>
+                    <div class="form-group">
+                        <label for="student-name">Nama Santri</label>
+                        <input type="text" id="student-name" placeholder="Masukkan nama lengkap santri">
+                    </div>
+                    <div class="form-group">
+                        <label for="student-class">Kelas</label>
+                        <select id="student-class">
+                            <option value="">-- Pilih Kelas --</option>
+                            <!-- Opsi kelas ditambahkan oleh JavaScript -->
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="permission-reason">Alasan Izin</label>
+                        <textarea id="permission-reason" placeholder="Contoh: Keperluan keluarga, sakit, dll."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="return-date">Perkiraan Tanggal Kembali</label>
+                        <input type="date" id="return-date">
+                    </div>
+                    <button id="save-permission-btn" class="btn" style="width: 100%;">Simpan Izin</button>
+                </div>
+
+                <div id="permission-message-box" class="message-box" style="margin-bottom: 2rem;"></div>
+
+                <hr style="border: none; border-top: 2px solid #cbd5e1; margin: 3rem 0;">
+                
+                <h3><i class="fas fa-list-alt"></i> Daftar Santri yang Sedang Izin</h3>
+                <div class="permission-table-wrapper">
+                    <table class="permission-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Santri</th>
+                                <th>Kelas</th>
+                                <th>Alasan</th>
+                                <th>Tgl Kembali</th>
+                                <th>Status</th>
+                                <th>Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissions-table-body">
+                            <!-- Data akan dimuat di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="kalender" class="page">
+            <h2 class="page-title">Kalender Pendidikan</h2>
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prev-month-btn" aria-label="Bulan sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="month-year-header"></h3>
+                    <button id="next-month-btn" aria-label="Bulan berikutnya"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-weekdays">
+                    <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+                </div>
+                <div id="calendar-days-grid" class="calendar-days"></div>
+            </div>
+            <div id="event-details-container" class="event-details-container">
+                <h4>Kegiatan pada Tanggal Terpilih:</h4>
+                <ul id="event-list"></ul>
+            </div>
+        </section>
+
+        <section id="struktur" class="page">
+            <h2 class="page-title">Bagan Struktur Pengurus</h2>
+            <div class="tree">
+                <ul>
+                    <li>
+                        <div class="node node-pimpinan"><h4>KH. Ach. Chadliri Bisyri</h4><p>Pengasuh Pesantren</p></div>
+                        <ul>
+                            <li>
+                                <div class="node node-ketua"><h4>Gus. Ach Syarifuddin</h4><p>Ketua Pengurus</p></div>
+                                <ul>
+                                    <li><div class="node node-inti"><h4>Mas'odi Achmad</h4><p>Wakil Ketua</p></div></li>
+                                    <li><div class="node node-inti"><h4>Ach. Thaha Hidayatullah</h4><p>Sekretaris</p></div></li>
+                                    <li><div class="node node-inti"><h4>Ach. Fahim</h4><p>Bendahara</p></div></li>
+                                </ul>
+                                <ul>
+                                    <li><div class="node node-kord"><h4>Bahrul Ulum</h4><p>Kord. Ubudiyyah</p></div></li>
+                                    <li>
+                                        <div class="node node-kord"><h4>Ach. Romdan</h4><p>Kurikulum</p></div>
+                                        <ul>
+                                            <li><div class="node node-anggota"><h4>Moh. Luay</h4><p>Kord. Sekolah</p></div></li>
+                                            <li><div class="node node-anggota"><h4>Ach. Rofiqi</h4><p>Kord. Muthola'ah</p></div></li>
+                                            <li><div class="node node-anggota"><h4>Ach. Ferdianto</h4><p>Kord. Media</p></div></li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <div class="node node-kord"><h4>Moh. Ali Banun Kalim</h4><p>Kord. Keamanan</p></div>
+                                        <ul>
+                                            <li><div class="node node-anggota"><h4>Ach. Jailani</h4><p>Keamanan Luar</p></div></li>
+                                            <li><div class="node node-anggota"><h4>Khodaifi</h4><p>Keamanan Dalam</p></div></li>
+                                            <li><div class="node node-anggota"><h4>Saifur Rahman</h4><p>Keamanan Dalam</p></div></li>
+                                        </ul>
+                                    </li>
+                                     <li>
+                                        <div class="node node-kord"><h4>Wildi Wahyudi</h4><p>Kord. Kebersihan</p></div>
+                                        <ul>
+                                            <li><div class="node node-anggota"><h4>Moh. Fahkruddin</h4><p>Humas</p></div></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="jadwal" class="page">
+            <h2 class="page-title">Jadwal Kegiatan Pesantren</h2>
+            <div class="schedule-block">
+                <h3 class="schedule-title"><i class="fas fa-book-open-reader"></i> Jadwal Ngajar Santri Luar</h3>
+                <div class="schedule-table-wrapper"><table class="schedule-table"><thead><tr><th>Malam</th><th>Kitab</th><th>Pengajar</th></tr></thead><tbody><tr><td class="day-cell">Sabtu</td><td class="activity-cell">Al Qur'an & Tasrif</td><td class="details-cell">Ulum, Mas'odi, Kamil, Fahril</td></tr><tr><td class="day-cell">Ahad</td><td class="activity-cell">Al Qur'an & Tasrif</td><td class="details-cell">Kalim, Fahar, Jibril</td></tr><tr><td class="day-cell">Senin</td><td class="activity-cell">Al Qur'an & Tasrif</td><td class="details-cell">Jailani, Rofiqi, Taufiq</td></tr><tr><td class="day-cell">Selasa</td><td class="activity-cell">Al Qur'an & Tasrif</td><td class="details-cell">Luay, Khodaifi, Fahril</td></tr><tr><td class="day-cell">Rabu</td><td class="activity-cell">Al Qur'an & Tasrif</td><td class="details-cell">Romdan, Syaifur, Ferdy</td></tr><tr><td class="day-cell">Kamis</td><td class="activity-cell">Al Qur'an & Tasrif</td><td class="details-cell">Wildi, Dayat, Kamil</td></tr></tbody></table></div>
+            </div>
+            <div class="schedule-block">
+                <h3 class="schedule-title"><i class="fas fa-broom"></i> Jadwal Piket Kebersihan</h3>
+                <div class="schedule-table-wrapper">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr><th>Hari</th><th>Area Kebersihan</th><th>Petugas</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="day-cell" rowspan="3">Sabtu</td><td class="activity-cell">Area I</td><td class="details-cell">Andre, Opick, Syaqiq</td></tr>
+                            <tr><td class="activity-cell">Area II</td><td class="details-cell">Baim, Nazil, Ilzam B</td></tr>
+                            <tr><td class="activity-cell">Area III</td><td class="details-cell">Sayadi, Faqih, Muzammil</td></tr>
+                            <tr><td class="day-cell" rowspan="3">Ahad</td><td class="activity-cell">Area I</td><td class="details-cell">Kamil, Nabil, Refal</td></tr>
+                            <tr><td class="activity-cell">Area II</td><td class="details-cell">Ipung, Jibril, Unis, Adi</td></tr>
+                            <tr><td class="activity-cell">Area III</td><td class="details-cell">Zaka, Rowit, Bagas</td></tr>
+                            <tr><td class="day-cell" rowspan="3">Senin</td><td class="activity-cell">Area I</td><td class="details-cell">Hasan, Hayat, Vino</td></tr>
+                            <tr><td class="activity-cell">Area II</td><td class="details-cell">Danil, Fiqri, Arif, Wafir</td></tr>
+                            <tr><td class="activity-cell">Area III</td><td class="details-cell">Farel, Rizqi Lapa, Samsul</td></tr>
+                            <tr><td class="day-cell">Jumat</td><td class="activity-cell" colspan="2" style="text-align: center; font-weight: 600;">Kerja Bakti Seluruh Area (Semua Santri)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="berita" class="page">
+            <h2 class="page-title">Berita & Pengumuman</h2>
+            <div class="news-grid">
+                <div class="news-card"><div class="news-date">15 JULI 2025</div><h3>Hasil Musyawarah Bulanan</h3><p>Berikut adalah hasil lengkap dari musyawarah bulanan pengurus pesantren...</p><a href="#berita-1" class="read-more page-link">Baca Selengkapnya &rarr;</a></div>
+                <div class="news-card"><div class="news-date">10 JULI 2025</div><h3>Jadwal Kegiatan Idul Adha 1446 H</h3><p>Informasi mengenai rangkaian kegiatan penyembelihan hewan kurban...</p><a href="#berita-2" class="read-more page-link">Baca Selengkapnya &rarr;</a></div>
+                <div class="news-card"><div class="news-date">01 JULI 2025</div><h3>Pengumuman Libur Awal Tahun Ajaran</h3><p>Diberitahukan kepada seluruh santri bahwa libur awal tahun ajaran baru akan dimulai...</p><a href="#berita-3" class="read-more page-link">Baca Selengkapnya &rarr;</a></div>
+            </div>
+        </section>
+
+        <section id="berita-1" class="page"><a href="#berita" class="back-link page-link">&larr; Kembali ke Daftar Berita</a><div class="article-content"><h2>Hasil Musyawarah Bulanan</h2><div class="news-date">15 JULI 2025</div><p>Assalamu'alaikum Wr. Wb. Diberitahukan kepada seluruh pengurus dan santri, berikut adalah hasil lengkap dari musyawarah bulanan yang telah dilaksanakan pada hari Sabtu, 13 Juli 2025.</p><p>Poin-poin utama yang dibahas antara lain adalah evaluasi kegiatan bulan lalu, perencanaan program untuk bulan Agustus, serta pembahasan mengenai persiapan lomba antar-asrama. Detail lengkap dapat dilihat di mading utama pesantren. Terima kasih. Wassalamu'alaikum Wr. Wb.</p></div></section>
+        <section id="berita-2" class="page"><a href="#berita" class="back-link page-link">&larr; Kembali ke Daftar Berita</a><div class="article-content"><h2>Jadwal Kegiatan Idul Adha 1446 H</h2><div class="news-date">10 JULI 2025</div><p>Dalam rangka menyambut Hari Raya Idul Adha 1446 H, berikut adalah informasi mengenai rangkaian kegiatan di lingkungan pesantren:</p><p>1. Takbir keliling akan dilaksanakan pada malam hari raya.<br>2. Sholat Idul Adha akan dilaksanakan di lapangan utama pada pukul 06:30 WIB.<br>3. Proses penyembelihan hewan kurban akan dimulai setelah sholat Ied hingga selesai.<br>4. Pembagian daging kurban akan dikoordinasikan oleh panitia.</p></div></section>
+        <section id="berita-3" class="page"><a href="#berita" class="back-link page-link">&larr; Kembali ke Daftar Berita</a><div class="article-content"><h2>Pengumuman Libur Awal Tahun Ajaran</h2><div class="news-date">01 JULI 2025</div><p>Diberitahukan kepada seluruh santri bahwa libur dalam rangka akhir tahun ajaran 1445 H dan awal tahun ajaran baru 1446 H akan dimulai pada tanggal 20 Juli 2025.</p><p>Santri diharapkan kembali ke pesantren paling lambat pada tanggal 5 Agustus 2025 untuk melakukan daftar ulang. Kegiatan belajar mengajar akan aktif kembali pada tanggal 6 Agustus 2025. Harap menjadi maklum.</p></div></section>
+
+        <section id="absensi" class="page">
+            <h2 class="page-title">Absensi Kelas Harian</h2>
+            <div class="attendance-container">
+                <div id="connection-status" class="connecting">Menghubungkan ke server...</div>
+                <p style="text-align: center; margin-bottom: 1.5rem; color: var(--gray-color);">Pilih kelas Anda untuk menampilkan daftar nama.</p>
+                <div id="class-selector" class="class-selector"></div>
+                <div id="wali-kelas-info" class="wali-kelas-info"></div>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 2rem 0;">
+                <div id="student-list"><p style="text-align: center; color: var(--gray-color);">Silakan pilih kelas terlebih dahulu.</p></div>
+                <div id="message-box" class="message-box"></div>
+            </div>
+        </section>
+
+        <section id="rekap" class="page">
+            <h2 class="page-title">Rekap Absensi Harian</h2>
+            <div class="recap-controls">
+                <input type="date" id="recap-date-picker">
+                <button id="show-recap-btn" class="btn">Tampilkan</button>
+            </div>
+            <div class="recap-results-container">
+                <div class="schedule-table-wrapper">
+                    <table class="schedule-table">
+                        <thead><tr><th>Nama Siswa</th><th>Kelas</th><th>Status</th><th>Tindakan</th></tr></thead>
+                        <tbody id="recap-table-body">
+                            <tr><td colspan="4" style="text-align:center; padding: 2rem;">Pilih tanggal dan klik "Tampilkan" untuk melihat rekap.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 - 2026 Sistem Informasi Pesantren. Dibuat untuk kemudahan bersama.</p>
+    </footer>
+
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- KONFIGURASI ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSd8a6AJ9F_obVeh97VZbGUhjbpWHZ85M",
+            authDomain: "absensi-pesantrenku.firebaseapp.com",
+            projectId: "absensi-pesantrenku",
+            storageBucket: "absensi-pesantrenku.appspot.com",
+            messagingSenderId: "420244010442",
+            appId: "1:420244010442:web:6b218ea87af5e5232f4b33"
+        };
+        const ADMIN_PASSWORD = "admin123";
+
+        // --- VARIABEL GLOBAL ---
+        let app, db, auth, isFirebaseConnected = false;
+        let calendarDate = new Date();
+        let requiredPageAccess = null;
+
+        // --- DATA STATIS ---
+        const classData = {
+            "Kelas Sifir": { teachers: "Ach. Ferdiyanto & Ach. Muzammil", students: ["Ilzam Audadi", "Ilzamul Khoir", "Alvini", "Dewi Anggraini", "Ahmad Fauzi"] },
+            "Kelas Ibtida' I": { teachers: "Moh. Fahkruddin & Wildi Wahyudi", students: ["Abdullah", "Budi Santoso", "Citra Lestari"] },
+            "Kelas Ibtida' II": { teachers: "Bahrul Ulum & Moh. Luay", students: ["Eka Prasetya", "Fajar Nugroho", "Gita Permata", "Hasan Basri"] },
+            "Kelas Ibtida' III": { teachers: "Ach. Romdan & Ach. Rofiqi", students: ["Indah Cahyani", "Joko Susilo", "Kartika Sari", "Lutfi Hakim"] },
+            "Kelas Tsanawi I": { teachers: "Mas'odi Achmad & Ach. Thoha Hidayatullah", students: ["Muhammad Iqbal", "Nurul Hidayah", "Putra Wijaya", "Rina Amelia"] },
+            "Kelas Tsanawi II": { teachers: "Gus. Ach. Syarifuddin & Moh. Ali Banun Kalim", students: ["Siti Aisyah", "Taufik Hidayat", "Umar Faruq", "Vina Agustina"] }
+        };
+        const waliSantriContacts = { "Abdullah": "6281234567890", "Budi Santoso": "6281234567891", "Citra Lestari": "6281234567892" };
+        const academicEvents = {
+            "2025-07-20": [{ title: "Libur Akhir Tahun Ajaran", description: "Santri mulai libur akhir tahun ajaran 1445 H." }],
+            "2025-08-05": [{ title: "Kembali ke Pesantren", description: "Batas akhir santri kembali ke pesantren dan melakukan daftar ulang." }],
+            "2025-08-06": [{ title: "Hari Pertama KBM", description: "Kegiatan Belajar Mengajar (KBM) tahun ajaran 1446 H dimulai." }],
+            "2025-08-17": [{ title: "Upacara HUT RI", description: "Upacara peringatan Hari Kemerdekaan Republik Indonesia." }],
+            "2025-12-20": [{ title: "Awal Ujian Semester Ganjil", description: "Pelaksanaan Ujian Akhir Semester (UAS) Ganjil." }],
+        };
+
+        // --- ELEMEN DOM ---
+        const pages = document.querySelectorAll('.page');
+        const pageLinks = document.querySelectorAll('.page-link');
+        const menuToggle = document.getElementById('menu-toggle');
+        const loginModal = document.getElementById('login-modal');
+        const passwordInput = document.getElementById('password-input');
+        const loginBtn = document.getElementById('login-btn');
+        const passwordError = document.getElementById('password-error');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const connectionStatusDiv = document.getElementById('connection-status');
+
+        // --- FUNGSI UTAMA ---
+        function showPage(targetId) {
+            const cleanId = targetId.replace('#', '');
+            const restrictedPages = ['rekap', 'perizinan'];
+            
+            if (restrictedPages.includes(cleanId) && sessionStorage.getItem('isAdminLoggedIn') !== 'true') {
+                requiredPageAccess = cleanId;
+                loginModal.style.display = 'flex';
+                return;
+            }
+
+            const activePage = document.getElementById(cleanId);
+            pages.forEach(page => page.classList.remove('active'));
+            if (activePage) activePage.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function handleHashChange() {
+            const hash = window.location.hash || '#beranda';
+            showPage(hash);
+        }
+
+        function handleLogin() {
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                loginModal.style.display = 'none';
+                passwordError.style.display = 'none';
+                passwordInput.value = '';
+                if (requiredPageAccess) {
+                    window.location.hash = requiredPageAccess;
+                    requiredPageAccess = null;
+                }
+            } else {
+                passwordError.style.display = 'block';
+            }
+        }
+        
+        function closeLoginModal() {
+            loginModal.style.display = 'none';
+            if (requiredPageAccess) {
+                 window.location.hash = '#beranda';
+                 requiredPageAccess = null;
+            }
+        }
+        
+        function showMessage(type, text, containerId = 'message-box') {
+            const messageBox = document.getElementById(containerId);
+            if (!messageBox) return;
+            messageBox.className = 'message-box'; // Reset class
+            messageBox.classList.add(type);
+            messageBox.textContent = text;
+            messageBox.style.display = 'block';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 3000);
+        }
+
+        // --- FUNGSI PERIZINAN ---
+        function initPermissions() {
+            const classSelect = document.getElementById('student-class');
+            Object.keys(classData).forEach(className => {
+                classSelect.add(new Option(className, className));
+            });
+            document.getElementById('return-date').valueAsDate = new Date();
+            document.getElementById('save-permission-btn').addEventListener('click', savePermission);
+            listenForPermissions();
+        }
+
+        async function savePermission() {
+            if (!isFirebaseConnected) { 
+                showMessage('error', 'Tidak terhubung ke server.', 'permission-message-box');
+                return; 
+            }
+            const studentName = document.getElementById('student-name').value.trim();
+            const studentClass = document.getElementById('student-class').value;
+            const reason = document.getElementById('permission-reason').value.trim();
+            const returnDate = document.getElementById('return-date').value;
+
+            if (!studentName || !studentClass || !reason || !returnDate) {
+                showMessage('error', 'Semua kolom harus diisi.', 'permission-message-box');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "permissions"), {
+                    studentName, studentClass, reason, returnDate,
+                    status: "Keluar",
+                    permissionDate: new Date().toISOString().slice(0, 10),
+                    createdAt: new Date()
+                });
+                showMessage('success', 'Data perizinan berhasil disimpan.', 'permission-message-box');
+                document.getElementById('student-name').value = '';
+                document.getElementById('student-class').value = '';
+                document.getElementById('permission-reason').value = '';
+            } catch (e) {
+                console.error("Error saving permission: ", e);
+                let errorMessage = 'Gagal menyimpan data.';
+                if (e.code === 'permission-denied') {
+                    errorMessage = 'Gagal: Izin ditolak. Periksa Aturan Keamanan (Rules) di Firebase.';
+                }
+                showMessage('error', errorMessage, 'permission-message-box');
+            }
+        }
+
+        function listenForPermissions() {
+            if (!isFirebaseConnected) return;
+            const q = query(collection(db, "permissions"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (querySnapshot) => {
+                const tableBody = document.getElementById('permissions-table-body');
+                tableBody.innerHTML = '';
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2rem;">Belum ada data perizinan.</td></tr>`;
+                    return;
+                }
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const row = document.createElement('tr');
+                    const isReturned = data.status === "Kembali";
+                    row.innerHTML = `
+                        <td>${data.studentName}</td>
+                        <td>${data.studentClass}</td>
+                        <td>${data.reason}</td>
+                        <td>${new Date(data.returnDate).toLocaleDateString('id-ID')}</td>
+                        <td><span class="status-badge-permission ${isReturned ? 'kembali' : 'keluar'}">${data.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm" data-id="${doc.id}" ${isReturned ? 'disabled' : ''}>
+                                ${isReturned ? 'Sudah Kembali' : 'Tandai Kembali'}
+                            </button>
+                        </td>
+                    `;
+                    if (!isReturned) {
+                        row.querySelector('button').addEventListener('click', markAsReturned);
+                    }
+                    tableBody.appendChild(row);
+                });
+            });
+        }
+
+        async function markAsReturned(e) {
+            const docId = e.target.dataset.id;
+            const permissionRef = doc(db, "permissions", docId);
+            try {
+                await updateDoc(permissionRef, { status: "Kembali" });
+                showMessage('success', 'Status berhasil diperbarui.', 'permission-message-box');
+            } catch (error) {
+                console.error("Error updating status: ", error);
+                let errorMessage = 'Gagal memperbarui status.';
+                 if (error.code === 'permission-denied') {
+                    errorMessage = 'Gagal: Izin ditolak. Periksa Aturan Keamanan (Rules) di Firebase.';
+                }
+                showMessage('error', errorMessage, 'permission-message-box');
+            }
+        }
+
+        // --- FUNGSI KALENDER ---
+        function renderCalendar(year, month) {
+            const calendarGrid = document.getElementById('calendar-days-grid');
+            const monthYearHeader = document.getElementById('month-year-header');
+            if (!calendarGrid || !monthYearHeader) return;
+
+            calendarGrid.innerHTML = '';
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            monthYearHeader.textContent = `${monthNames[month]} ${year}`;
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                calendarGrid.insertAdjacentHTML('beforeend', `<div class="day other-month"></div>`);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                dayElement.textContent = i;
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+
+                if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                if (academicEvents[dateStr]) {
+                    dayElement.classList.add('event');
+                }
+                dayElement.addEventListener('click', () => showEventDetails(dateStr, dayElement));
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function showEventDetails(dateStr, clickedElement) {
+            const eventList = document.getElementById('event-list');
+            if (!eventList) return;
+            document.querySelectorAll('.calendar-days .day.selected').forEach(el => el.classList.remove('selected'));
+            if(clickedElement) clickedElement.classList.add('selected');
+
+            const events = academicEvents[dateStr];
+            eventList.innerHTML = '';
+            if (events && events.length > 0) {
+                events.forEach(event => {
+                    eventList.insertAdjacentHTML('beforeend', `<li><span class="event-title">${event.title}</span><span class="event-desc">${event.description}</span></li>`);
+                });
+            } else {
+                eventList.innerHTML = '<li>Tidak ada kegiatan terjadwal untuk tanggal ini.</li>';
+            }
+        }
+
+        function initCalendar() {
+            const prevBtn = document.getElementById('prev-month-btn');
+            const nextBtn = document.getElementById('next-month-btn');
+            const eventList = document.getElementById('event-list');
+            if (!prevBtn || !nextBtn || !eventList) return;
+            
+            eventList.innerHTML = '<li>Pilih tanggal pada kalender untuk melihat detail kegiatan.</li>';
+            prevBtn.addEventListener('click', () => { calendarDate.setMonth(calendarDate.getMonth() - 1); renderCalendar(calendarDate.getFullYear(), calendarDate.getMonth()); });
+            nextBtn.addEventListener('click', () => { calendarDate.setMonth(calendarDate.getMonth() + 1); renderCalendar(calendarDate.getFullYear(), calendarDate.getMonth()); });
+            renderCalendar(calendarDate.getFullYear(), calendarDate.getMonth());
+        }
+
+        // --- FUNGSI ABSENSI ---
+        async function connectToFirebase() {
+            const statusDiv = connectionStatusDiv;
+            try {
+                if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("...")) {
+                    throw new Error("Konfigurasi Firebase belum diisi.");
+                }
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                await signInAnonymously(auth);
+                isFirebaseConnected = true;
+                if (statusDiv) {
+                    statusDiv.textContent = 'Terhubung ke Server';
+                    statusDiv.className = 'success';
+                }
+                // Once connected, init features that need firebase
+                initPermissions();
+            } catch (error) {
+                isFirebaseConnected = false;
+                console.error("Firebase authentication failed:", error);
+                if (statusDiv) {
+                    statusDiv.textContent = 'Gagal terhubung. Pastikan kode konfigurasi & pengaturan Firebase sudah benar.';
+                    statusDiv.className = 'error';
+                }
+            } finally {
+                 document.querySelectorAll('.status-buttons button, #show-recap-btn, #save-permission-btn').forEach(btn => btn.disabled = !isFirebaseConnected);
+            }
+        }
+
+        async function saveAttendance(className, studentName, status) {
+            if (!isFirebaseConnected) { showMessage('error', 'Tidak terhubung ke server.'); return; }
+            try {
+                const today = new Date().toISOString().slice(0, 10);
+                await addDoc(collection(db, "attendance"), {
+                    className, studentName, status, date: today, timestamp: new Date()
+                });
+                showMessage('success', `Absensi untuk ${studentName} (${status}) berhasil disimpan!`);
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showMessage('error', 'Gagal menyimpan absensi.');
+            }
+        }
+        
+        function renderStudentList(className) {
+            const studentListContainer = document.getElementById('student-list');
+            const waliKelasInfo = document.getElementById('wali-kelas-info');
+            
+            studentListContainer.innerHTML = "";
+            waliKelasInfo.innerHTML = "";
+            waliKelasInfo.style.display = 'none';
+
+            const classInfo = classData[className];
+            if (!classInfo) {
+                studentListContainer.innerHTML = '<p>Data kelas tidak ditemukan.</p>';
+                return;
+            }
+
+            if (classInfo.teachers) {
+                waliKelasInfo.innerHTML = `Wali Kelas : <strong>${classInfo.teachers}</strong>`;
+                waliKelasInfo.style.display = 'block';
+            }
+
+            const students = classInfo.students;
+            if (!students || students.length === 0) {
+                studentListContainer.innerHTML = '<p style="text-align: center; color: var(--gray-color);">Tidak ada siswa di kelas ini.</p>';
+                return;
+            }
+
+            students.forEach(student => {
+                const row = document.createElement('div');
+                row.className = 'student-row';
+                row.innerHTML = `<span class="student-name">${student}</span>
+                    <div class="status-buttons">
+                        <button class="hadir" data-status="Hadir">Hadir</button>
+                        <button class="izin" data-status="Izin">Izin</button>
+                        <button class="sakit" data-status="Sakit">Sakit</button>
+                    </div>`;
+                row.querySelectorAll('.status-buttons button').forEach(button => {
+                    button.disabled = !isFirebaseConnected;
+                    button.onclick = () => saveAttendance(className, student, button.dataset.status);
+                });
+                studentListContainer.appendChild(row);
+            });
+        }
+
+        function createClassButtons() {
+            const selectorContainer = document.getElementById('class-selector');
+            if (!selectorContainer) return;
+            selectorContainer.innerHTML = '';
+            Object.keys(classData).forEach(className => {
+                const button = document.createElement('button');
+                button.className = 'class-btn';
+                button.textContent = className;
+                button.onclick = () => {
+                    document.querySelectorAll('.class-btn.active').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderStudentList(className);
+                };
+                selectorContainer.appendChild(button);
+            });
+        }
+
+        async function fetchAttendanceRecap(date) {
+            const recapTableBody = document.getElementById('recap-table-body');
+            if (!isFirebaseConnected) {
+                recapTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem; color: red;">Tidak terhubung ke server.</td></tr>`;
+                return;
+            }
+            recapTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem;">Memuat data...</td></tr>`;
+            try {
+                const q = query(collection(db, "attendance"), where("date", "==", date));
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    recapTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem;">Tidak ada data absensi untuk tanggal ini.</td></tr>`;
+                    return;
+                }
+                recapTableBody.innerHTML = "";
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const phoneNumber = waliSantriContacts[data.studentName];
+                    let actionCell = '<td>-</td>';
+                    if (data.status !== 'Hadir' && phoneNumber) {
+                        const message = encodeURIComponent(`Assalamualaikum, kami dari PP Queen Ainul Yaqien ingin menginformasikan bahwa ananda ${data.studentName} pada tanggal ${data.date} tidak hadir dengan status ${data.status}.`);
+                        actionCell = `<td><a href="https://wa.me/${phoneNumber}?text=${message}" target="_blank" class="wa-button"><i class="fab fa-whatsapp"></i> Hubungi</a></td>`;
+                    } else if (data.status !== 'Hadir') {
+                        actionCell = '<td><small>No. WA tidak ada</small></td>';
+                    }
+                    recapTableBody.insertAdjacentHTML('beforeend', `
+                        <tr>
+                            <td class="activity-cell">${data.studentName}</td>
+                            <td class="details-cell">${data.className}</td>
+                            <td><span class="status-badge ${data.status.toLowerCase()}">${data.status}</span></td>
+                            ${actionCell}
+                        </tr>`);
+                });
+            } catch (error) {
+                console.error("Error fetching recap: ", error);
+                recapTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem; color: red;">Gagal memuat data. Periksa aturan keamanan Firebase.</td></tr>`;
+            }
+        }
+
+        function initRecapPage() {
+            const datePicker = document.getElementById('recap-date-picker');
+            const showButton = document.getElementById('show-recap-btn');
+            if (!datePicker || !showButton) return;
+            datePicker.value = new Date().toISOString().slice(0, 10);
+            showButton.addEventListener('click', () => {
+                if (datePicker.value) fetchAttendanceRecap(datePicker.value);
+            });
+        }
+
+        // --- INISIALISASI APLIKASI ---
+        function initializeAppOnLoad() {
+            pageLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.hash = this.getAttribute('href');
+                    if (menuToggle.checked) menuToggle.checked = false;
+                });
+            });
+            loginBtn.addEventListener('click', handleLogin);
+            passwordInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') handleLogin(); });
+            closeModalBtn.addEventListener('click', closeLoginModal);
+            
+            window.addEventListener('hashchange', handleHashChange);
+            
+            handleHashChange();
+            initCalendar();
+            createClassButtons();
+            initRecapPage();
+            connectToFirebase();
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeAppOnLoad);
+
+    </script>
+</body>
+</html>
+
